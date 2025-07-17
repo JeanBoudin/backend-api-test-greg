@@ -1,4 +1,4 @@
-# Dockerfile for Symfony application
+# Dockerfile for Railway deployment
 FROM php:8.2-fpm-alpine
 
 # Install system dependencies
@@ -7,14 +7,12 @@ RUN apk add --no-cache \
     unzip \
     postgresql-dev \
     postgresql-client \
-    netcat-openbsd \
     libzip-dev \
     libpng-dev \
     libjpeg-turbo-dev \
     freetype-dev \
     icu-dev \
     oniguruma-dev \
-    supervisor \
     nginx
 
 # Install PHP extensions
@@ -35,9 +33,6 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy composer files
-COPY composer.json composer.lock ./
-
 # Copy application code
 COPY . .
 
@@ -51,22 +46,15 @@ RUN chown -R www-data:www-data /var/www/html \
     && chown -R www-data:www-data var/cache var/log \
     && chmod -R 775 var/cache var/log
 
-# Copy nginx configuration
-COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
-COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+# Copy nginx configuration for Railway
+COPY docker/nginx/railway.conf /etc/nginx/conf.d/default.conf
 
-# Copy supervisor configuration
-COPY docker/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+# Copy Railway entrypoint script
+COPY docker/railway-entrypoint.sh /usr/local/bin/railway-entrypoint.sh
+RUN chmod +x /usr/local/bin/railway-entrypoint.sh
 
-# Copy entrypoint script
-COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+# Expose Railway port
+EXPOSE $PORT
 
-# Expose port
-EXPOSE 80
-
-# Use entrypoint script
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-
-# Start supervisor
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+# Use Railway entrypoint script
+ENTRYPOINT ["/usr/local/bin/railway-entrypoint.sh"]
