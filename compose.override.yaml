@@ -1,19 +1,20 @@
 version: '3'
 
 services:
+  # Development overrides
+  app:
+    environment:
+      - APP_ENV=dev
+      - APP_DEBUG=1
+    volumes:
+      - .:/var/www/html
+      - ./var/log:/var/www/html/var/log
+      - ./var/cache:/var/www/html/var/cache
+    command: ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+
 ###> doctrine/doctrine-bundle ###
   database:
     ports:
-      - "5432"
+      - "5432:5432"
 ###< doctrine/doctrine-bundle ###
 
-###> symfony/mailer ###
-  mailer:
-    image: axllent/mailpit
-    ports:
-      - "1025"
-      - "8025"
-    environment:
-      MP_SMTP_AUTH_ACCEPT_ANY: 1
-      MP_SMTP_AUTH_ALLOW_INSECURE: 1
-###< symfony/mailer ###

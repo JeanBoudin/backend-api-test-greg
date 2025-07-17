@@ -1,0 +1,49 @@
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Development files
+.env.local
+.env.*.local
+
+# Cache and logs
+var/cache/*
+var/log/*
+!var/cache/.gitkeep
+!var/log/.gitkeep
+
+# Testing
+tests/
+phpunit.xml.dist
+.phpunit.result.cache
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+/vendor/
+node_modules/
+
+# User uploads (keep structure but ignore content)
+public/assets/images/uploads/*
+!public/assets/images/uploads/.gitkeep
+
+# Backup files
+*.bak
+*.backup
+
+# Documentation
+README.md
+CLAUDE.md
